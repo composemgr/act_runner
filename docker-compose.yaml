@@ -1,0 +1,27 @@
+name: act_runner
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  act_runner:
+    image: vegardit/gitea-act-runner:dind-latest
+    restart: always
+    pull_policy: always
+    privileged: true
+    environment:
+      - 'TZ=${TZ:-America/New_York}'
+      - 'GITEA_INSTANCE_URL=https://$(GITEA_URL:?GITEA_URL Variable required}'
+      - 'GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_ACT_TOKEN:?GITEA_ACT_TOKEN Variable required}'
+      - 'GITEA_RUNNER_LABELS=act_runner:docker://catthehacker/ubuntu:full-latest'
+    volumes:
+      - '/var/lib/srv/$USER/docker/vegardit/gitea-act-runner/dind-latest/data/act_runner:/data:z'
+    networks:
+      - act_runner
+
+networks:
+  act_runner:
+    name: act_runner
+    external: false
