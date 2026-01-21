@@ -1,0 +1,29 @@
+# nginx proxy address - http://172.17.0.1
+
+name: act_runner
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  act_runner:
+    image: vegardit/gitea-act-runner:dind-latest
+    restart: always
+    pull_policy: always
+    privileged: true
+    logging: *default-logging
+    environment:
+      - 'TZ=${TZ:-America/New_York}'
+      - 'GITEA_INSTANCE_URL=https://$(GITEA_URL:?GITEA_URL Variable required}'
+      - 'GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_ACT_TOKEN:?GITEA_ACT_TOKEN Variable required}'
+      - 'GITEA_RUNNER_LABELS=act_runner:docker://catthehacker/ubuntu:full-latest,ubuntu:docker://catthehacker/ubuntu:full-latest,ubuntu-latest:docker://catthehacker/ubuntu:full-latest'
+    volumes:
+      - './rootfs/data/act_runner:/data:z'
+    networks:
+      - default
+
+networks:
+  default:
+    external: false
