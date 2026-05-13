@@ -27,3 +27,7 @@ services:
 networks:
   default:
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
